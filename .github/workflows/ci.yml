@@ -25,11 +25,11 @@ jobs:
         working-directory: back
         run: ./gradlew build
 
-      - name: Upload backend coverage report
+      - name: Upload backend build output
         uses: actions/upload-artifact@v4
         with:
-          name: back-coverage
-          path: back/build/reports/jacoco/test/jacocoTestReport.xml
+          name: back-build
+          path: back/build
           retention-days: 1
 
   front:
@@ -73,11 +73,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download backend coverage report
+      - name: Download backend build output
         uses: actions/download-artifact@v4
         with:
-          name: back-coverage
-          path: back/build/reports/jacoco/test/
+          name: back-build
+          path: back/build
 
       - name: Download frontend coverage report
         uses: actions/download-artifact@v4
