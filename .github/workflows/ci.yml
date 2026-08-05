@@ -60,7 +60,7 @@ jobs:
   sonar:
     name: SonarQube analysis
     runs-on: ubuntu-latest
-    needs: [back, front]
+    needs: [front]
     steps:
       - uses: actions/checkout@v4
         with:
