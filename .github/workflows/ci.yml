@@ -25,13 +25,6 @@ jobs:
         working-directory: back
         run: ./gradlew build
 
-      - name: Upload backend build output
-        uses: actions/upload-artifact@v4
-        with:
-          name: back-build
-          path: back/build
-          retention-days: 1
-
   front:
     name: Build & test frontend
     runs-on: ubuntu-latest
@@ -73,11 +66,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download backend build output
-        uses: actions/download-artifact@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          name: back-build
-          path: back/build
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
 
       - name: Download frontend coverage report
         uses: actions/download-artifact@v4
@@ -85,7 +79,8 @@ jobs:
           name: front-coverage
           path: front/coverage/microcrm/
 
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v8
+      - name: Build & analyze
+        working-directory: back
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew build sonar
