@@ -3,6 +3,8 @@ plugins {
 	id 'org.springframework.boot' version '3.2.5'
 	id 'io.spring.dependency-management' version '1.1.4'
 	id 'com.adarshr.test-logger' version '4.0.0'
+	id 'jacoco'
+	id 'org.sonarqube' version '7.3.1.8318'
 }
 
 group = 'com.openclassroom.devops.orion'
@@ -28,4 +30,29 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+    }
+}
+
+sonar {
+    properties {
+        // build.gradle lives in back/, mais le repo (et front/) sont un niveau au-dessus
+        property "sonar.projectBaseDir", rootDir.parentFile
+        property "sonar.organization", "bhahlou"
+        property "sonar.projectKey", "Bhahlou_P7-FSJA"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.sources", "back/src/main,front/src"
+        property "sonar.tests", "back/src/test,front/src"
+        property "sonar.test.inclusions", "**/*Test*.java,front/src/**/*.spec.ts"
+        property "sonar.exclusions", "front/src/**/*.png,front/src/**/*.jpg,front/src/**/*.jpeg,front/src/**/*.ico,front/src/**/*.gif,front/src/**/*.woff,front/src/**/*.woff2,front/src/**/*.ttf"
+        property "sonar.javascript.lcov.reportPaths", "front/coverage/microcrm/lcov.info"
+        // sonar.java.binaries / sonar.java.libraries (+ variantes test) et le rapport
+        // Jacoco sont déduits automatiquement par le plugin à partir du build Gradle
+    }
 }
