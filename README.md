@@ -108,6 +108,8 @@ cd back
 
 ### Images Docker
 
+Le [Dockerfile](./Dockerfile) est un [multi-stage build](https://docs.docker.com/build/building/multi-stage/) qui produit deux cibles indépendantes, `front` et `back`, chacune destinée à tourner dans son propre conteneur. Il n'embarque jamais les outils de build (Node, Gradle/JDK complet) dans les images finales.
+
 #### Client
 
 ##### Construire l'image
@@ -119,10 +121,10 @@ docker build --target front -t orion-microcrm-front:latest .
 ##### Exécuter l'image
 
 ```shell
-docker run -it --rm -p 80:80 -p 443:443 orion-microcrm-front:latest
+docker run -it --rm -p 80:8080 orion-microcrm-front:latest
 ```
 
-L'application sera disponible sur https://localhost.
+L'application sera disponible sur http://localhost (Caddy écoute en interne sur le port non privilégié 8080, ce qui permet au conteneur de tourner en utilisateur non-root).
 
 #### Serveur
 
@@ -140,16 +142,10 @@ docker run -it --rm -p 8080:8080 orion-microcrm-back:latest
 
 L'API sera disponible sur http://localhost:8080.
 
-#### Tout en un
+### Orchestration avec Docker Compose
+
+Le fichier [docker-compose.yml](./docker-compose.yml) démarre les deux services (`front` et `back`) comme deux conteneurs distincts, avec les mêmes cibles de build que ci-dessus:
 
 ```shell
-docker build --target standalone -t orion-microcrm-standalone:latest .
+docker compose up --build
 ```
-
-##### Exécuter l'image
-
-```shell
-docker run -it --rm -p 8080:8080 -p 80:80 -p 443:443 orion-microcrm-standalone:latest
-```
-
-L'application sera disponible sur https://localhost et l'API sur http://localhost:8080.

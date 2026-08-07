@@ -1,0 +1,19 @@
+services:
+  back:
+    build:
+      context: .
+      target: back
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  front:
+    build:
+      context: .
+      target: front
+    ports:
+      - "80:8080"
+    depends_on:
+      back:
+        condition: service_healthy
+    restart: unless-stopped
