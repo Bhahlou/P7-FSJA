@@ -10,7 +10,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAMESPACE: ${{ github.repository_owner }}/p7-fsja
+  IMAGE_NAMESPACE: bhahlou/p7-fsja
 
 jobs:
   publish:
