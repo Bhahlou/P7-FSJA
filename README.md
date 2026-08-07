@@ -149,3 +149,12 @@ Le fichier [docker-compose.yml](./docker-compose.yml) démarre les deux services
 ```shell
 docker compose up --build
 ```
+
+### Images publiées (CD)
+
+À chaque merge sur `main`, le workflow [`.github/workflows/cd.yml`](./.github/workflows/cd.yml) reconstruit les images `front` et `back` et les publie sur GitHub Container Registry, taguées `latest` et par SHA de commit. Pour les récupérer sans avoir à builder localement:
+
+```shell
+docker pull ghcr.io/bhahlou/p7-fsja-front:latest
+docker pull ghcr.io/bhahlou/p7-fsja-back:latest
+```
