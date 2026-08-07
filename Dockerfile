@@ -1,57 +1,52 @@
-FROM node as front-build
+# syntax=docker/dockerfile:1
 
-COPY ./front /src
-
-WORKDIR /src
-
-RUN npm ci \
-    && npx @angular/cli build --optimization
-
-FROM gradle:jdk17 as back-build
-
-COPY ./back /src
+FROM node:20-alpine AS front-build
 
 WORKDIR /src
 
-RUN ./gradlew build
+COPY front/package.json front/package-lock.json ./
+RUN npm ci
 
-FROM alpine:3.19 as front
+COPY front/ ./
+RUN npx @angular/cli build --optimization
+
+
+FROM gradle:8.7-jdk17-alpine AS back-build
+
+WORKDIR /src
+
+COPY back/ ./
+RUN ./gradlew build --no-daemon
+
+FROM caddy:2-alpine AS front
+
+RUN addgroup -S app && adduser -S app -G app
+
+ENV XDG_CONFIG_HOME=/config \
+    XDG_DATA_HOME=/data
+RUN mkdir -p /config /data && chown -R app:app /config /data
 
 COPY --from=front-build /src/dist/microcrm/browser /app/front
-COPY misc/docker/Caddyfile /app/Caddyfile
+COPY misc/docker/Caddyfile /etc/caddy/Caddyfile
 
-RUN apk add caddy
+USER app
 
-WORKDIR /app
+EXPOSE 8080
 
-EXPOSE 80
-EXPOSE 443
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget -qO- http://localhost:8080/ >/dev/null || exit 1
 
-CMD ["/usr/sbin/caddy", "run"]
+FROM eclipse-temurin:17-jre-alpine AS back
 
-FROM alpine:3.19 as back
-
-COPY --from=back-build /src/build/libs/microcrm-0.0.1-SNAPSHOT.jar /app/back/microcrm-0.0.1-SNAPSHOT.jar
-
-RUN apk add openjdk21-jre-headless
+RUN addgroup -S app && adduser -S app -G app
+USER app
 
 WORKDIR /app
+COPY --from=back-build /src/build/libs/microcrm-0.0.1-SNAPSHOT.jar microcrm.jar
 
-EXPOSE 4200
+EXPOSE 8080
 
-CMD ["java", "-jar", "/app/back/microcrm-0.0.1-SNAPSHOT.jar"]
+HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 \
+    CMD wget -qO- http://localhost:8080/ >/dev/null || exit 1
 
-FROM alpine:3.19 as standalone
-
-COPY --from=front / /
-COPY --from=back / /
-COPY misc/docker/supervisor.ini /app/supervisor.ini
-
-RUN apk add supervisor
-
-WORKDIR /app
-
-CMD ["/usr/bin/supervisord", "-c", "/app/supervisor.ini"]
-
-
-
+CMD ["java", "-jar", "microcrm.jar"]

@@ -3,3 +3,6 @@
 /front/dist
 /front/node_modules
 /front/.angular
+/front/coverage
+.git
+.github
