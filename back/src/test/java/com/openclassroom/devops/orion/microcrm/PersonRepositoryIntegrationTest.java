@@ -6,12 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
-public class PersonRepositoryIntegrationTest {
+class PersonRepositoryIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -20,7 +19,7 @@ public class PersonRepositoryIntegrationTest {
     private PersonRepository personRepository;
 
     @Test
-    public void whenFindByEmail_thenReturnPerson() {
+    void whenFindByEmail_thenReturnPerson() {
         // given
         Person jdoe = new Person();
         jdoe.setEmail("jdoe@example.net");
