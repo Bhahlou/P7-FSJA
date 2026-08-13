@@ -1,0 +1,14 @@
+{
+  "name": "p7-fsja",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Root tooling (commit linting) for the P7-FSJA monorepo (back + front)",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "husky": "^9.1.6"
+  }
+}
