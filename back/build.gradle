@@ -33,6 +33,14 @@ test {
     finalizedBy jacocoTestReport
 }
 
+// Spring Boot's plugin also builds a "-plain.jar" (classes only, not runnable)
+// alongside the real executable jar. We never consume the plain jar as a
+// library, and its presence in back/build/libs/*.jar was getting picked up
+// as a second, confusing release asset.
+jar {
+    enabled = false
+}
+
 jacocoTestReport {
     dependsOn test
     reports {
