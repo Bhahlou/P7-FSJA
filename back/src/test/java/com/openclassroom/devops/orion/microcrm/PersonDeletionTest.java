@@ -37,12 +37,17 @@ class PersonDeletionTest {
         orionInc.addPerson(jdoe);
         entityManager.persist(orionInc);
         entityManager.flush();
+        // Detach and reload: Person.organizations is the mappedBy (inverse) side
+        // of the association, only populated by Hibernate when fetched from the
+        // database, not by calling Organization.addPerson() in memory.
+        entityManager.clear();
 
-        personRepository.delete(jdoe);
+        Person reloadedPerson = entityManager.find(Person.class, jdoe.getId());
+        personRepository.delete(reloadedPerson);
         entityManager.flush();
         entityManager.clear();
 
-        Organization reloaded = entityManager.find(Organization.class, orionInc.getId());
-        assertFalse(reloaded.getPersons().contains(jdoe));
+        Organization reloadedOrg = entityManager.find(Organization.class, orionInc.getId());
+        assertFalse(reloadedOrg.getPersons().contains(reloadedPerson));
     }
 }
