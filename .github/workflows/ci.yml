@@ -3,6 +3,8 @@ name: CI
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -11,6 +13,7 @@ jobs:
   commitlint:
     name: Lint commit messages
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     permissions:
       contents: read
       pull-requests: read
@@ -23,6 +26,7 @@ jobs:
   back:
     name: Build & test backend
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
 
@@ -41,6 +45,8 @@ jobs:
         working-directory: back
         run: ./gradlew build -x test
 
+  # Also runs on push to main (unlike commitlint/back) so sonar below always
+  # has a fresh coverage report to analyze after a merge, not just during PRs.
   front:
     name: Build & test frontend
     runs-on: ubuntu-latest
@@ -73,6 +79,9 @@ jobs:
           path: front/coverage/microcrm/lcov.info
           retention-days: 1
 
+  # Runs on push to main too (not just pull_request) so SonarCloud's analysis
+  # of main is refreshed after every merge, instead of staying pinned to
+  # whatever commit last had an open PR analyzed against it.
   sonar:
     name: SonarQube analysis
     runs-on: ubuntu-latest
