@@ -4,7 +4,11 @@
   "version": "0.0.0",
   "description": "Root tooling (commit linting) for the P7-FSJA monorepo (back + front)",
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "dora:collect": "node misc/dora/collect-dora-metrics.js",
+    "dora:setup-dashboard": "node misc/dora/setup-kibana-dashboard.js",
+    "kpis:collect": "node misc/kpis/collect-operational-kpis.js",
+    "kpis:setup-dashboard": "node misc/kpis/setup-kibana-dashboard.js"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",

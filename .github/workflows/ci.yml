@@ -33,9 +33,13 @@ jobs:
           java-version: "17"
           cache: gradle
 
-      - name: Build & test
+      - name: Run tests
         working-directory: back
-        run: ./gradlew build
+        run: ./gradlew test
+
+      - name: Build
+        working-directory: back
+        run: ./gradlew build -x test
 
   front:
     name: Build & test frontend
