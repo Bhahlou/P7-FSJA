@@ -3,6 +3,11 @@ services:
     build:
       context: .
       target: back
+    environment:
+      - LOGSTASH_HOST=host.docker.internal
+      - LOGSTASH_PORT=5000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "8080:8080"
     restart: unless-stopped
